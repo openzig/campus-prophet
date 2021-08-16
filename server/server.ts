@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import searchRouter from "./routes/search"
 
 dotenv.config();
 const app = express();
@@ -27,7 +28,7 @@ mongoose
   });
 
 // routes
-
+app.use('/api/v1/search', searchRouter);
 
 app.listen(port, () => {
   console.log(`Server is running on port: ${port}`);
