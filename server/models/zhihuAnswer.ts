@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 
-const reviewSchema: mongoose.Schema = new Schema(
+const zhihuAnswerSchema: mongoose.Schema = new Schema(
     {
         _id: { type: Number, required: true },
         content: { type: String, required: true },
@@ -12,4 +12,4 @@ const reviewSchema: mongoose.Schema = new Schema(
     }
 );
 
-export const Review = mongoose.model('zhihu_answers', reviewSchema);
+export const ZhihuAnswer = mongoose.model('zhihu_answers', zhihuAnswerSchema);

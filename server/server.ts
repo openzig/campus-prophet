@@ -2,7 +2,8 @@ import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import searchRouter from "./routes/search"
+import zhihuRouter from "./routes/zhihu"
+import postsRouter from "./routes/posts"
 
 dotenv.config();
 const app = express();
@@ -28,7 +29,8 @@ mongoose
   });
 
 // routes
-app.use('/api/v1/search', searchRouter);
+app.use('/api/v1/zhihu', zhihuRouter);
+app.use('/api/v1/post', postsRouter);
 
 app.listen(port, () => {
   console.log(`Server is running on port: ${port}`);

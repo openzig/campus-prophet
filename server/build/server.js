@@ -7,7 +7,8 @@ const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const dotenv_1 = __importDefault(require("dotenv"));
-const search_1 = __importDefault(require("./routes/search"));
+const zhihu_1 = __importDefault(require("./routes/zhihu"));
+const posts_1 = __importDefault(require("./routes/posts"));
 dotenv_1.default.config();
 const app = express_1.default();
 const port = process.env.PORT ? parseInt(process.env.PORT) : 5000;
@@ -29,7 +30,8 @@ mongoose_1.default
     console.log(`MongoDB database connection failed: ${error}`);
 });
 // routes
-app.use('/api/v1/search', search_1.default);
+app.use('/api/v1/zhihu', zhihu_1.default);
+app.use('/api/v1/post', posts_1.default);
 app.listen(port, () => {
     console.log(`Server is running on port: ${port}`);
 });
