@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import zhihuRouter from "./routes/zhihu";
 import postsRouter from "./routes/posts";
 import votesRouter from "./routes/votes";
+import commentsRouter from "./routes/comments";
 
 dotenv.config();
 const app = express();
@@ -33,6 +34,7 @@ mongoose
 app.use("/api/v1/zhihu", zhihuRouter);
 app.use("/api/v1/post", postsRouter);
 app.use("/api/v1/vote", votesRouter);
+app.use("/api/v1/comment", commentsRouter);
 
 app.listen(port, () => {
   console.log(`Server is running on port: ${port}`);

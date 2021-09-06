@@ -3,6 +3,7 @@ import { Request, Response } from "express-serve-static-core";
 import { Post } from "../models/post";
 import dotenv from "dotenv";
 import { Vote } from "../models/vote";
+import { Comment } from "../models/comment";
 
 dotenv.config();
 const router = Router();
@@ -32,24 +33,38 @@ router.route("/:id").get((req: Request, res: Response) => {
 });
 
 router.route("/:id/vote").post((req: Request, res: Response) => {
-  Post.findByIdAndUpdate(
-    req.params.id,
-    {
-      $inc: { voteup_count: 1 },
-    },
-    { new: true }
-  )
-    .then((result: any) => res.json(result))
-    .catch((err: any) => res.status(400).json(`Error: ${err}`));
-
-  const newVote = new Vote ({
+  const newVote = new Vote({
     voter_id: req.body.voter_id,
-    target_id: req.params.id
+    target_id: req.params.id,
   });
 
   newVote
     .save()
-    .then((value: any) => res.json(value._id))
+    .then((value: any) => {
+      Post.findByIdAndUpdate(
+        req.params.id,
+        {
+          $inc: { voteup_count: 1 },
+        },
+        { new: true }
+      )
+        .then((result: any) => res.json(result))
+        .catch((err: any) => res.status(400).json(`Error: ${err}`));
+    })
+    .catch((err: any) => res.status(400).json(`Error: ${err}`));
+});
+
+router.route("/:id/comments").get((req: Request, res: Response) => {
+  let pageSize: number = parseInt(
+    (req.query.size as string) || DEFAULT_PAGE_SIZE
+  );
+  let skipCount: number =
+    pageSize * (parseInt((req.query.page as string) || "0") - 1);
+  Comment.find({ parent_id: req.params.id }, null, {
+    skip: skipCount,
+    limit: pageSize,
+  })
+    .then((result: any) => res.json(result))
     .catch((err: any) => res.status(400).json(`Error: ${err}`));
 });
 

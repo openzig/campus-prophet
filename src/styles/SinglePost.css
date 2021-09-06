@@ -23,3 +23,7 @@
 .singlePost .button {
     cursor: pointer;
 }
+
+.singlePostWapper {
+    margin-bottom: 2em;
+}

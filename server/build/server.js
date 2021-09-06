@@ -10,6 +10,7 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const zhihu_1 = __importDefault(require("./routes/zhihu"));
 const posts_1 = __importDefault(require("./routes/posts"));
 const votes_1 = __importDefault(require("./routes/votes"));
+const comments_1 = __importDefault(require("./routes/comments"));
 dotenv_1.default.config();
 const app = express_1.default();
 const port = process.env.PORT ? parseInt(process.env.PORT) : 5000;
@@ -34,6 +35,7 @@ mongoose_1.default
 app.use("/api/v1/zhihu", zhihu_1.default);
 app.use("/api/v1/post", posts_1.default);
 app.use("/api/v1/vote", votes_1.default);
+app.use("/api/v1/comment", comments_1.default);
 app.listen(port, () => {
     console.log(`Server is running on port: ${port}`);
 });

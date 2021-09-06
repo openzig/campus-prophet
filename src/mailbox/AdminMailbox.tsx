@@ -25,11 +25,9 @@ interface IMailboxState {
 }
 
 const MIN_NEW_POST_TITLE_LENGTH: number = 4;
+const DEFAULT_PAGE_SIZE: number = parseInt(process.env.REACT_APP_DEFAULT_PAGE_SIZE || "5");
 
-class AdminMailbox extends Component<
-  IMailboxProps,
-  IMailboxState
-> {
+class AdminMailbox extends Component<IMailboxProps, IMailboxState> {
   constructor(props: IMailboxProps) {
     super(props);
 
@@ -51,12 +49,16 @@ class AdminMailbox extends Component<
     this.setState({ nextPageLoading: true, currentPageNumber: nextPageNumber });
     axios
       .get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/post/search/AdminMailbox?page=${nextPageNumber}`
+        `${process.env.REACT_APP_BACKEND_URL}/api/v1/post/search/AdminMailbox?page=${nextPageNumber}&size=${DEFAULT_PAGE_SIZE}`
       )
       .then((response) => {
-        if (!response || !response.data || response.data.length === 0) {
+        if (!response || !response.data) {
           this.setState({ isLastPage: true });
           return;
+        }
+
+        if (response.data.length < DEFAULT_PAGE_SIZE) {
+          this.setState({ isLastPage: true });
         }
 
         const newPosts = [...this.state.posts, ...response.data];
@@ -88,14 +90,17 @@ class AdminMailbox extends Component<
       entity: "AdminMailbox",
     };
 
-    try {
-      const result = await axios
-        .post(`${process.env.BACKEND_URL}/api/v1/post/add`, post);
-      this.setState({ posts: [...this.state.posts, post] });
-      return await new Promise((resolve, _reject) => resolve(result));
-    } catch (err) {
-      return await new Promise((_resolve_1, reject_1) => reject_1("发布失败，请重试"));
-    }
+    return axios
+      .post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/post/add`, post)
+      .then((response) => {
+        this.setState({ posts: [...this.state.posts, post] });
+        return new Promise((resolve, _reject) => resolve(response));
+      })
+      .catch((err: any) => {
+        return new Promise((_resolve_1, reject_1) =>
+          reject_1("发布失败，请重试")
+        );
+      });
   }
 
   render() {
@@ -104,7 +109,11 @@ class AdminMailbox extends Component<
         <div className="postsWrapper">
           {this.state.posts.length > 0 &&
             this.state.posts.map((post) => (
-              <Link target="_blank" to={`/post/${post._id}`}>
+              <Link
+                target="_blank"
+                to={`/post/${post._id}`}
+                key={`/post/${post._id}`}
+              >
                 <SinglePostItem key={post._id} data={post} />
               </Link>
             ))}
