@@ -6,11 +6,11 @@ export default class NavigationBar extends Component {
     return (
       <Navbar bg="light" expand="lg">
         <Container>
-          <Navbar.Brand href="/">xxx</Navbar.Brand>
+          <Navbar.Brand href="/">Sudo</Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
-              <Nav.Link href="/campus">大学口碑</Nav.Link>
+              <Nav.Link href="/campus">主页</Nav.Link>
               <Nav.Link href="/askadmin">站长信箱</Nav.Link>
             </Nav>
           </Navbar.Collapse>

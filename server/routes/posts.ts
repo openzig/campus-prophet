@@ -2,10 +2,11 @@ import Router from "express";
 import { Request, Response } from "express-serve-static-core";
 import { Post } from "../models/post";
 import dotenv from "dotenv";
+import { Vote } from "../models/vote";
 
-dotenv.config()
+dotenv.config();
 const router = Router();
-const DEFAULT_PAGE_SIZE: string = process.env.DEFAULT_PAGE_SIZE || "10"
+const DEFAULT_PAGE_SIZE: string = process.env.DEFAULT_PAGE_SIZE || "10";
 
 router.route("/add").post((req: Request, res: Response) => {
   const newPost = new Post({
@@ -25,8 +26,30 @@ router.route("/add").post((req: Request, res: Response) => {
 });
 
 router.route("/:id").get((req: Request, res: Response) => {
-  Post.find({ _id: req.params.id })
+  Post.findById(req.params.id)
     .then((result: any) => res.json(result))
+    .catch((err: any) => res.status(400).json(`Error: ${err}`));
+});
+
+router.route("/:id/vote").post((req: Request, res: Response) => {
+  Post.findByIdAndUpdate(
+    req.params.id,
+    {
+      $inc: { voteup_count: 1 },
+    },
+    { new: true }
+  )
+    .then((result: any) => res.json(result))
+    .catch((err: any) => res.status(400).json(`Error: ${err}`));
+
+  const newVote = new Vote ({
+    voter_id: req.body.voter_id,
+    target_id: req.params.id
+  });
+
+  newVote
+    .save()
+    .then((value: any) => res.json(value._id))
     .catch((err: any) => res.status(400).json(`Error: ${err}`));
 });
 
@@ -35,9 +58,15 @@ router.route("/:id").get((req: Request, res: Response) => {
 // And each response should return the progress for next page, so that the next page start from it
 // See https://stackoverflow.com/a/23640287
 router.route("/search/:name").get((req: Request, res: Response) => {
-  let pageSize: number = parseInt(req.query.size as string || DEFAULT_PAGE_SIZE)
-  let skipCount: number = pageSize * (parseInt(req.query.page as string || "0") - 1)
-  Post.find({ entity: req.params.name }, null, { skip: skipCount, limit: pageSize })
+  let pageSize: number = parseInt(
+    (req.query.size as string) || DEFAULT_PAGE_SIZE
+  );
+  let skipCount: number =
+    pageSize * (parseInt((req.query.page as string) || "0") - 1);
+  Post.find({ entity: req.params.name }, null, {
+    skip: skipCount,
+    limit: pageSize,
+  })
     .then((result: any) => res.json(result))
     .catch((err: any) => res.status(400).json(`Error: ${err}`));
 });

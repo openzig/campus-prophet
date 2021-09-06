@@ -19,17 +19,12 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Post = void 0;
+exports.Vote = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
-const postSchema = new mongoose_1.Schema({
-    title: { type: String, required: true },
-    content: { type: String, required: true },
-    comment_count: { type: Number, required: true },
-    voteup_count: { type: Number, required: true },
-    poster_id: { type: String, required: true },
-    poster_name: { type: String, required: true },
-    entity: { type: String, required: true }
+const voteSchema = new mongoose_1.Schema({
+    voter_id: { type: String, required: true },
+    target_id: { type: String, required: true }
 }, {
     timestamps: true
 });
-exports.Post = mongoose_1.default.model('posts', postSchema);
+exports.Vote = mongoose_1.default.model('votes', voteSchema);

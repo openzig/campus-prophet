@@ -1,0 +1,18 @@
+.adminMailboxWrapper {
+    margin-top: 1em;
+    margin-bottom: 5em;
+}
+
+.postsWrapper a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.postMessage {
+    margin-top: 2em;
+}
+
+.postsSpinner {
+    text-align: center;
+}
+

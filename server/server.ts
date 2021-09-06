@@ -2,8 +2,9 @@ import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import zhihuRouter from "./routes/zhihu"
-import postsRouter from "./routes/posts"
+import zhihuRouter from "./routes/zhihu";
+import postsRouter from "./routes/posts";
+import votesRouter from "./routes/votes";
 
 dotenv.config();
 const app = express();
@@ -29,8 +30,9 @@ mongoose
   });
 
 // routes
-app.use('/api/v1/zhihu', zhihuRouter);
-app.use('/api/v1/post', postsRouter);
+app.use("/api/v1/zhihu", zhihuRouter);
+app.use("/api/v1/post", postsRouter);
+app.use("/api/v1/vote", votesRouter);
 
 app.listen(port, () => {
   console.log(`Server is running on port: ${port}`);

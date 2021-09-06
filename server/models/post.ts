@@ -6,7 +6,7 @@ const postSchema: mongoose.Schema = new Schema(
         content: { type: String, required: true },
         comment_count: { type: Number, required: true },
         voteup_count: { type: Number, required: true },
-        poster_id: { type: Number, required: true },
+        poster_id: { type: String, required: true },
         poster_name: { type: String, required: true },
         entity: { type: String, required: true }
     },

@@ -1,0 +1,25 @@
+.singlePost .mb-2 {
+    float: left;
+    margin-right: 2em;
+    margin-top: 1em;
+}
+
+.singlePost .timestamp {
+    float: right;
+}
+
+.singlePost:hover {
+    cursor: pointer;
+}
+
+.singlePost.full:hover {
+    cursor: initial;
+}
+
+.singlePost .persona {
+    margin-bottom: 1em;
+}
+
+.singlePost .button {
+    cursor: pointer;
+}

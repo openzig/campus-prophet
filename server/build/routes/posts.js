@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const post_1 = require("../models/post");
 const dotenv_1 = __importDefault(require("dotenv"));
+const vote_1 = require("../models/vote");
 dotenv_1.default.config();
 const router = express_1.default();
 const DEFAULT_PAGE_SIZE = process.env.DEFAULT_PAGE_SIZE || "10";
@@ -25,8 +26,23 @@ router.route("/add").post((req, res) => {
         .catch((err) => res.status(400).json(`Error: ${err}`));
 });
 router.route("/:id").get((req, res) => {
-    post_1.Post.find({ _id: req.params.id })
+    post_1.Post.findById(req.params.id)
         .then((result) => res.json(result))
+        .catch((err) => res.status(400).json(`Error: ${err}`));
+});
+router.route("/:id/vote").post((req, res) => {
+    post_1.Post.findByIdAndUpdate(req.params.id, {
+        $inc: { voteup_count: 1 },
+    }, { new: true })
+        .then((result) => res.json(result))
+        .catch((err) => res.status(400).json(`Error: ${err}`));
+    const newVote = new vote_1.Vote({
+        voter_id: req.body.voter_id,
+        target_id: req.params.id
+    });
+    newVote
+        .save()
+        .then((value) => res.json(value._id))
         .catch((err) => res.status(400).json(`Error: ${err}`));
 });
 // The pagination here is using a method with low performance.
@@ -36,7 +52,10 @@ router.route("/:id").get((req, res) => {
 router.route("/search/:name").get((req, res) => {
     let pageSize = parseInt(req.query.size || DEFAULT_PAGE_SIZE);
     let skipCount = pageSize * (parseInt(req.query.page || "0") - 1);
-    post_1.Post.find({ entity: req.params.name }, null, { skip: skipCount, limit: pageSize })
+    post_1.Post.find({ entity: req.params.name }, null, {
+        skip: skipCount,
+        limit: pageSize,
+    })
         .then((result) => res.json(result))
         .catch((err) => res.status(400).json(`Error: ${err}`));
 });
