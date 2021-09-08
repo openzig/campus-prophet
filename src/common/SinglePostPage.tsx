@@ -32,6 +32,8 @@ interface ISinglePostPageState {
   nextPageLoading: boolean;
   currentPageNumber: number;
   isLastPage: boolean;
+  replyToName?: string;
+  replyToId?: string;
 }
 
 const DEFAULT_PAGE_SIZE: number = parseInt(
@@ -113,9 +115,15 @@ class SinglePostPage extends Component<
   }
 
   async submitCommentHandler(newCommentContent: string): Promise<any> {
+    if (!this.state.replyToId) {
+      return new Promise((_resolve_1, reject_1) =>
+          reject_1("请先在要回复的帖子上点击'回复'按钮")
+        );
+    }
+
     const comment: Comment = {
-      parent_id: this.state.post!._id!,
-      reply_to_post: true,
+      parent_id: this.state.post?._id!,
+      reply_to_post: this.state.replyToId === this.state.post?._id,
       content: newCommentContent,
       voteup_count: 0,
       commenter_id: this.props.auth0.user!.name!,
@@ -124,8 +132,8 @@ class SinglePostPage extends Component<
 
     return axios
       .post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/comment/add`, comment)
-      .then((response) => {
-        this.setState({ comments: [...this.state.comments, comment] });
+      .then((response) => { 
+        this.setState({ comments: [...this.state.comments, response.data] });
         return new Promise((resolve, _reject) => resolve(response));
       })
       .catch((err: any) => {
@@ -163,6 +171,14 @@ class SinglePostPage extends Component<
       });
   }
 
+  onClickReplyForPost() {
+    this.editorRef.current?.scrollIntoView();
+    this.setState({
+      replyToName: `@${this.state.post?.poster_name!} `,
+      replyToId: this.state.post?._id,
+    });
+  }
+
   render() {
     var htmlToReactParser = new HtmlToReactParser();
     return (
@@ -191,9 +207,7 @@ class SinglePostPage extends Component<
                 </Card.Subtitle>
                 <Card.Subtitle
                   className="mb-2 text-muted button"
-                  onClick={() => {
-                    this.editorRef.current?.scrollIntoView();
-                  }}
+                  onClick={this.onClickReplyForPost.bind(this)}
                 >
                   <Reply size={24} /> 回复
                 </Card.Subtitle>
@@ -211,7 +225,17 @@ class SinglePostPage extends Component<
           <h5>评论:</h5>
           {this.state.comments &&
             this.state.comments.map((comment) => (
-              <SingleCommentItem key={comment._id} data={comment} />
+              <SingleCommentItem
+                key={comment._id}
+                data={comment}
+                onClickReply={() => {
+                  this.editorRef.current?.scrollIntoView();
+                  this.setState({
+                    replyToName: `@${comment.commenter_name} `,
+                    replyToId: comment._id,
+                  });
+                }}
+              />
             ))}
           <div className="postsSpinner">
             {this.state.nextPageLoading && <Spinner animation="border" />}
@@ -238,6 +262,7 @@ class SinglePostPage extends Component<
             <Card.Body>
               <RichTextEditor
                 submitHandler={this.submitCommentHandler.bind(this)}
+                initialText={this.state.replyToName}
               />
             </Card.Body>
           </Card>

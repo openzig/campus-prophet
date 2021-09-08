@@ -1,6 +1,6 @@
 import { Component } from "react";
 import { Editor } from "react-draft-wysiwyg";
-import { EditorState, convertToRaw } from "draft-js";
+import { EditorState, convertToRaw, ContentState } from "draft-js";
 import draftToHtml from "draftjs-to-html";
 
 import { unemojify } from "node-emoji";
@@ -15,6 +15,7 @@ type SubmitHandler = (content: string) => Promise<any>;
 
 interface IRichTextEditorProps extends WithAuth0Props {
   submitHandler: SubmitHandler;
+  initialText?: string;
 }
 
 interface IRichTextEditorState {
@@ -40,6 +41,16 @@ class RichTextEditor extends Component<
       submitFailure: false,
       failureMessage: "",
     };
+  }
+
+  componentWillReceiveProps(props: IRichTextEditorProps) {
+    if (props.initialText) {
+      this.setState({
+        editorState: EditorState.createWithContent(
+          ContentState.createFromText(props.initialText)
+        ),
+      });
+    }
   }
 
   onChange(state: EditorState) {

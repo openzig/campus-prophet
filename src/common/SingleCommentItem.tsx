@@ -7,8 +7,11 @@ import { PersonCircle, Reply } from "react-bootstrap-icons";
 
 var HtmlToReactParser = require("html-to-react").Parser;
 
+type ClickReplyHandler = () => void;
+
 interface ISingleCommentProps {
   data: Comment;
+  onClickReply?: ClickReplyHandler;
 }
 
 interface ISingleCommentState {}
@@ -34,7 +37,13 @@ export default class SingleCommentItem extends Component<
             <Card.Text>
               {htmlToReactParser.parse(this.props.data.content)}
             </Card.Text>
-            <Card.Subtitle className="mb-2 text-muted button">
+            <Card.Subtitle
+              onClick={() => {
+                this.props.onClickReply &&
+                  this.props.onClickReply();
+              }}
+              className="mb-2 text-muted button"
+            >
               <Reply size={24} /> 回复
             </Card.Subtitle>
             <Card.Subtitle className="mb-2 text-muted timestamp">

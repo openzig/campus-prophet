@@ -27,8 +27,11 @@ router.route("/add").post((req: Request, res: Response) => {
           },
           { new: true }
         )
-          .then((result: any) => res.json(result))
+          .then((result: any) => res.json(value))
           .catch((err: any) => res.status(400).json(`Error: ${err}`));
+      }
+      else {
+        return res.json(value);
       }
     })
     .catch((err: any) => res.status(400).json(`Error: ${err}`));
