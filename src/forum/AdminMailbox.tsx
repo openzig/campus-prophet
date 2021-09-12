@@ -25,7 +25,9 @@ interface IMailboxState {
 }
 
 const MIN_NEW_POST_TITLE_LENGTH: number = 4;
-const DEFAULT_PAGE_SIZE: number = parseInt(process.env.REACT_APP_DEFAULT_PAGE_SIZE || "5");
+const DEFAULT_PAGE_SIZE: number = parseInt(
+  process.env.REACT_APP_DEFAULT_PAGE_SIZE || "5"
+);
 
 class AdminMailbox extends Component<IMailboxProps, IMailboxState> {
   constructor(props: IMailboxProps) {
@@ -93,7 +95,9 @@ class AdminMailbox extends Component<IMailboxProps, IMailboxState> {
     return axios
       .post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/post/add`, post)
       .then((response) => {
-        this.setState({ posts: [...this.state.posts, post] });
+        this.setState({
+          posts: [...this.state.posts, { ...post, _id: response.data }],
+        });
         return new Promise((resolve, _reject) => resolve(response));
       })
       .catch((err: any) => {

@@ -60,7 +60,7 @@ router.route("/:id/comments").get((req: Request, res: Response) => {
   );
   let skipCount: number =
     pageSize * (parseInt((req.query.page as string) || "0") - 1);
-  Comment.find({ parent_id: req.params.id }, null, {
+  Comment.find({ post_id: req.params.id }, null, {
     skip: skipCount,
     limit: pageSize,
   })

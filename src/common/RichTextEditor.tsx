@@ -24,6 +24,7 @@ interface IRichTextEditorState {
   submitSuccess: boolean;
   submitFailure: boolean;
   failureMessage: string;
+  initialText?: string;
 }
 
 const MIN_TEXT_LENGTH: number = 10;
@@ -39,18 +40,21 @@ class RichTextEditor extends Component<
       isLoading: false,
       submitSuccess: false,
       submitFailure: false,
-      failureMessage: "",
+      failureMessage: ""
     };
   }
 
-  componentWillReceiveProps(props: IRichTextEditorProps) {
-    if (props.initialText) {
-      this.setState({
+  static getDerivedStateFromProps(props: IRichTextEditorProps, state: IRichTextEditorState) {
+    if (props.initialText && props.initialText !== state.initialText) {
+      return {
         editorState: EditorState.createWithContent(
           ContentState.createFromText(props.initialText)
         ),
-      });
+        initialText: props.initialText
+      }
     }
+
+    return null;
   }
 
   onChange(state: EditorState) {
@@ -115,7 +119,9 @@ class RichTextEditor extends Component<
         >
           {this.state.isLoading ? "发布中…" : "发布"}
         </Button>
-        {!this.props.auth0.isAuthenticated && <LoginButton />}
+        {!this.props.auth0.isAuthenticated && (
+          <LoginButton>请先登陆</LoginButton>
+        )}
         <div className="errorMessage">
           <Alert show={this.state.submitSuccess} variant="success">
             发表成功

@@ -50,7 +50,7 @@ router.route("/:id/vote").post((req, res) => {
 router.route("/:id/comments").get((req, res) => {
     let pageSize = parseInt(req.query.size || DEFAULT_PAGE_SIZE);
     let skipCount = pageSize * (parseInt(req.query.page || "0") - 1);
-    comment_1.Comment.find({ parent_id: req.params.id }, null, {
+    comment_1.Comment.find({ post_id: req.params.id }, null, {
         skip: skipCount,
         limit: pageSize,
     })

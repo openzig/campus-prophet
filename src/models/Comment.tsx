@@ -1,7 +1,7 @@
 type Comment = {
   _id?: string;
   parent_id: string;
-  reply_to_post: boolean;
+  post_id: string;
   content: string;
   voteup_count: number;
   commenter_id: string;

@@ -1,29 +1,37 @@
 .singlePost .mb-2 {
-    float: left;
-    margin-right: 2em;
-    margin-top: 1em;
+  float: left;
+  margin-right: 1em;
+  margin-top: 1em;
 }
 
 .singlePost .timestamp {
-    float: right;
+  float: right;
 }
 
 .singlePost:hover {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .singlePost.full:hover {
-    cursor: initial;
+  cursor: initial;
 }
 
 .singlePost .persona {
-    margin-bottom: 1em;
+  margin-bottom: 1em;
 }
 
 .singlePost .button {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .singlePostWapper {
-    margin-bottom: 2em;
+  margin-bottom: 2em;
+}
+
+.singlePost .post-caption {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }

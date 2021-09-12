@@ -1,0 +1,14 @@
+.navbar .navbar-brand {
+    font-family: fantasy;
+}
+
+.navbar a,
+.navbar button,
+.navbar .navbar-nav .nav-link,
+.navbar .navbar-brand {
+    color: white;
+}
+
+.nav-icon {
+    margin-right: 0.5em;
+}

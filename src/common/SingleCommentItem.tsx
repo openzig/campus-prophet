@@ -3,7 +3,7 @@ import { Card } from "react-bootstrap";
 import Comment from "../models/Comment";
 import "../styles/SinglePost.css";
 import moment from "moment";
-import { PersonCircle, Reply } from "react-bootstrap-icons";
+import { PersonSquare, Reply } from "react-bootstrap-icons";
 
 var HtmlToReactParser = require("html-to-react").Parser;
 
@@ -32,15 +32,14 @@ export default class SingleCommentItem extends Component<
         <Card>
           <Card.Body>
             <Card.Subtitle className="persona">
-              <PersonCircle size={18} /> {this.props.data.commenter_name}
+              <PersonSquare size={18} /> {this.props.data.commenter_name}
             </Card.Subtitle>
             <Card.Text>
               {htmlToReactParser.parse(this.props.data.content)}
             </Card.Text>
             <Card.Subtitle
               onClick={() => {
-                this.props.onClickReply &&
-                  this.props.onClickReply();
+                this.props.onClickReply && this.props.onClickReply();
               }}
               className="mb-2 text-muted button"
             >

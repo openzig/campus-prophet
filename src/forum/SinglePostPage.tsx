@@ -8,12 +8,12 @@ import Comment from "../models/Comment";
 import {
   HandThumbsUp,
   HandThumbsUpFill,
-  PersonCircle,
+  PersonSquare,
   Reply,
 } from "react-bootstrap-icons";
-import RichTextEditor from "./RichTextEditor";
+import RichTextEditor from "../common/RichTextEditor";
 import { withAuth0, WithAuth0Props } from "@auth0/auth0-react";
-import SingleCommentItem from "./SingleCommentItem";
+import SingleCommentItem from "../common/SingleCommentItem";
 
 var HtmlToReactParser = require("html-to-react").Parser;
 
@@ -34,6 +34,7 @@ interface ISinglePostPageState {
   isLastPage: boolean;
   replyToName?: string;
   replyToId?: string;
+  isAuthenticated: boolean;
 }
 
 const DEFAULT_PAGE_SIZE: number = parseInt(
@@ -53,6 +54,7 @@ class SinglePostPage extends Component<
       nextPageLoading: false,
       currentPageNumber: 0,
       isLastPage: false,
+      isAuthenticated: false,
     };
   }
 
@@ -72,22 +74,27 @@ class SinglePostPage extends Component<
       .catch(function (error) {
         console.log(error);
       });
+  }
 
-    this.props.auth0.getAccessTokenSilently().then((token) => {
-      axios
-        .get(
-          `${process.env.REACT_APP_BACKEND_URL}/api/v1/vote/${this.props.auth0
-            .user?.email!}/${this.props.match.params.id}`
-        )
-        .then((response) => {
-          this.setState({
-            isVoted: response.data != null,
-          });
-        })
-        .catch(function (error) {
-          console.log(error);
+  componentDidUpdate(prevProps: ISinglePostPageProps, prevState: ISinglePostPageState) {
+    if (this.props.auth0.isAuthenticated && !prevProps.auth0.isAuthenticated) {
+      this.updateIsVoted(this.props.auth0.user?.name!);
+    }
+  }
+
+  updateIsVoted(voterId: string) {
+    axios
+      .get(
+        `${process.env.REACT_APP_BACKEND_URL}/api/v1/vote/${voterId}/${this.props.match.params.id}`
+      )
+      .then((response) => {
+        this.setState({
+          isVoted: response.data != null,
         });
-    });
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
   }
 
   onClickThumbup() {
@@ -117,13 +124,13 @@ class SinglePostPage extends Component<
   async submitCommentHandler(newCommentContent: string): Promise<any> {
     if (!this.state.replyToId) {
       return new Promise((_resolve_1, reject_1) =>
-          reject_1("请先在要回复的帖子上点击'回复'按钮")
-        );
+        reject_1("请先在要回复的帖子上点击'回复'按钮")
+      );
     }
 
     const comment: Comment = {
-      parent_id: this.state.post?._id!,
-      reply_to_post: this.state.replyToId === this.state.post?._id,
+      post_id: this.state.post?._id!,
+      parent_id: this.state.replyToId,
       content: newCommentContent,
       voteup_count: 0,
       commenter_id: this.props.auth0.user!.name!,
@@ -132,7 +139,7 @@ class SinglePostPage extends Component<
 
     return axios
       .post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/comment/add`, comment)
-      .then((response) => { 
+      .then((response) => {
         this.setState({ comments: [...this.state.comments, response.data] });
         return new Promise((resolve, _reject) => resolve(response));
       })
@@ -188,7 +195,7 @@ class SinglePostPage extends Component<
             <Card className="singlePost full">
               <Card.Body>
                 <Card.Subtitle className="persona">
-                  <PersonCircle size={18} /> {this.state.post.poster_name}
+                  <PersonSquare size={18} /> {this.state.post.poster_name}
                 </Card.Subtitle>
                 <Card.Title>{this.state.post.title}</Card.Title>
                 <Card.Text>

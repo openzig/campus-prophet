@@ -1,21 +1,45 @@
+import { withAuth0, WithAuth0Props } from "@auth0/auth0-react";
 import React, { Component } from "react";
 import { Navbar, Nav, Container } from "react-bootstrap";
+import { Envelope, InfoCircle, PersonSquare } from "react-bootstrap-icons";
+import LoginButton from "./LoginButton";
+import "../styles/NavigationBar.css";
 
-export default class NavigationBar extends Component {
+interface INavigationBarProps extends WithAuth0Props {}
+
+interface INavigationBarState {}
+
+class NavigationBar extends Component<
+  INavigationBarProps,
+  INavigationBarState
+> {
   render() {
     return (
-      <Navbar bg="light" expand="lg">
+      <Navbar bg="primary" variant="light">
         <Container>
-          <Navbar.Brand href="/">Sudo</Navbar.Brand>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
-          <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="me-auto">
-              <Nav.Link href="/campus">主页</Nav.Link>
-              <Nav.Link href="/askadmin">站长信箱</Nav.Link>
-            </Nav>
-          </Navbar.Collapse>
+          <Nav className="me-auto">
+            <Nav.Link href="/">
+              <Envelope className="nav-icon" size={28} /> 答疑
+            </Nav.Link>
+            <Nav.Link href="/aboutme">
+              <InfoCircle className="nav-icon" size={28} /> 关于我
+            </Nav.Link>
+          </Nav>
+
+          {!this.props.auth0.isAuthenticated && (
+            <LoginButton>Signin</LoginButton>
+          )}
+          {this.props.auth0.isAuthenticated && (
+            <div>
+              <Nav.Link href="/userprofile" style={{ float: "right" }}>
+                <PersonSquare size={28} /> {this.props.auth0.user?.nickname}
+              </Nav.Link>
+            </div>
+          )}
         </Container>
       </Navbar>
     );
   }
 }
+
+export default withAuth0(NavigationBar);
