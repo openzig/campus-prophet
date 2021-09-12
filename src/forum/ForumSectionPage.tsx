@@ -12,25 +12,34 @@ import { Link } from "react-router-dom";
 import RichTextEditor from "../common/RichTextEditor";
 import SinglePostItem from "../common/SinglePostItem";
 import Post from "../models/Post";
-import "../styles/AdminMailbox.css";
+import "../styles/ForumSectionPage.css";
 
-interface IMailboxProps extends WithAuth0Props {}
+interface IForumSectionPageProps extends WithAuth0Props {
+  sectionName: string;
+  privateToAdmin?: boolean;
+}
 
-interface IMailboxState {
+interface IForumSectionPageState {
   nextPageLoading: boolean;
   posts: Post[];
   newPostTitle: string;
   currentPageNumber: number;
   isLastPage: boolean;
+  isAdmin: boolean;
+  isAuthenticated: boolean;
 }
 
 const MIN_NEW_POST_TITLE_LENGTH: number = 4;
 const DEFAULT_PAGE_SIZE: number = parseInt(
   process.env.REACT_APP_DEFAULT_PAGE_SIZE || "5"
 );
+const ADMIN_NAME = process.env.REACT_APP_ADMIN_NAME;
 
-class AdminMailbox extends Component<IMailboxProps, IMailboxState> {
-  constructor(props: IMailboxProps) {
+class ForumSectionPage extends Component<
+  IForumSectionPageProps,
+  IForumSectionPageState
+> {
+  constructor(props: IForumSectionPageProps) {
     super(props);
 
     this.state = {
@@ -39,7 +48,20 @@ class AdminMailbox extends Component<IMailboxProps, IMailboxState> {
       newPostTitle: "",
       currentPageNumber: 0,
       isLastPage: false,
+      isAdmin: false,
+      isAuthenticated: false
     };
+  }
+
+  static getDerivedStateFromProps(props: IForumSectionPageProps, state: IForumSectionPageState) {
+    if (props.auth0.isAuthenticated && !state.isAuthenticated) {
+      return {
+        isAdmin: props.auth0.user?.name === ADMIN_NAME,
+        isAuthenticated: true
+      }
+    }
+
+    return null;
   }
 
   componentDidMount() {
@@ -51,7 +73,7 @@ class AdminMailbox extends Component<IMailboxProps, IMailboxState> {
     this.setState({ nextPageLoading: true, currentPageNumber: nextPageNumber });
     axios
       .get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/post/search/AdminMailbox?page=${nextPageNumber}&size=${DEFAULT_PAGE_SIZE}`
+        `${process.env.REACT_APP_BACKEND_URL}/api/v1/post/search/${this.props.sectionName}?page=${nextPageNumber}&size=${DEFAULT_PAGE_SIZE}`
       )
       .then((response) => {
         if (!response || !response.data) {
@@ -89,7 +111,7 @@ class AdminMailbox extends Component<IMailboxProps, IMailboxState> {
       voteup_count: 0,
       poster_id: this.props.auth0.user!.name!,
       poster_name: this.props.auth0.user!.nickname!,
-      entity: "AdminMailbox",
+      entity: this.props.sectionName,
     };
 
     return axios
@@ -138,34 +160,36 @@ class AdminMailbox extends Component<IMailboxProps, IMailboxState> {
             </Button>
           </div>
         </div>
-        <div className="postMessage">
-          <Card>
-            <Card.Header>
-              <Card.Title>发布新话题</Card.Title>
-            </Card.Header>
-            <Card.Body>
-              <InputGroup className="mb-3">
-                <InputGroup.Text id="inputGroup-sizing-default">
-                  标题
-                </InputGroup.Text>
-                <FormControl
-                  type="text"
-                  onChange={(evt: React.ChangeEvent<HTMLInputElement>) => {
-                    this.setState({
-                      newPostTitle: evt.currentTarget.value,
-                    });
-                  }}
+        {(this.state.isAdmin || !this.props.privateToAdmin) && (
+          <div className="postMessage">
+            <Card>
+              <Card.Header>
+                <Card.Title>发布新话题</Card.Title>
+              </Card.Header>
+              <Card.Body>
+                <InputGroup className="mb-3">
+                  <InputGroup.Text id="inputGroup-sizing-default">
+                    标题
+                  </InputGroup.Text>
+                  <FormControl
+                    type="text"
+                    onChange={(evt: React.ChangeEvent<HTMLInputElement>) => {
+                      this.setState({
+                        newPostTitle: evt.currentTarget.value,
+                      });
+                    }}
+                  />
+                </InputGroup>
+                <RichTextEditor
+                  submitHandler={this.submitPostHandler.bind(this)}
                 />
-              </InputGroup>
-              <RichTextEditor
-                submitHandler={this.submitPostHandler.bind(this)}
-              />
-            </Card.Body>
-          </Card>
-        </div>
+              </Card.Body>
+            </Card>
+          </div>
+        )}
       </div>
     );
   }
 }
 
-export default withAuth0(AdminMailbox);
+export default withAuth0(ForumSectionPage);
