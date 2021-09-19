@@ -109,8 +109,8 @@ class ForumSectionPage extends Component<
       content: newPostContent,
       comment_count: 0,
       voteup_count: 0,
-      poster_id: this.props.auth0.user!.name!,
-      poster_name: this.props.auth0.user!.nickname!,
+      poster_id: this.props.auth0.user ? this.props.auth0.user!.name! : "匿名用户",
+      poster_name: this.props.auth0.user ? this.props.auth0.user!.nickname! : "匿名用户",
       entity: this.props.sectionName,
     };
 

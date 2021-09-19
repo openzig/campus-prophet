@@ -40,18 +40,21 @@ class RichTextEditor extends Component<
       isLoading: false,
       submitSuccess: false,
       submitFailure: false,
-      failureMessage: ""
+      failureMessage: "",
     };
   }
 
-  static getDerivedStateFromProps(props: IRichTextEditorProps, state: IRichTextEditorState) {
+  static getDerivedStateFromProps(
+    props: IRichTextEditorProps,
+    state: IRichTextEditorState
+  ) {
     if (props.initialText && props.initialText !== state.initialText) {
       return {
         editorState: EditorState.createWithContent(
           ContentState.createFromText(props.initialText)
         ),
-        initialText: props.initialText
-      }
+        initialText: props.initialText,
+      };
     }
 
     return null;
@@ -121,6 +124,15 @@ class RichTextEditor extends Component<
         </Button>
         {!this.props.auth0.isAuthenticated && (
           <LoginButton>请先登陆</LoginButton>
+        )}
+        {!this.props.auth0.isAuthenticated && (
+          <Button
+            variant="primary"
+            disabled={this.state.isLoading}
+            onClick={this.handleSubmit.bind(this)}
+          >
+            {this.state.isLoading ? "发布中…" : "匿名发布"}
+          </Button>
         )}
         <div className="errorMessage">
           <Alert show={this.state.submitSuccess} variant="success">

@@ -133,8 +133,8 @@ class SinglePostPage extends Component<
       parent_id: this.state.replyToId,
       content: newCommentContent,
       voteup_count: 0,
-      commenter_id: this.props.auth0.user!.name!,
-      commenter_name: this.props.auth0.user!.nickname!,
+      commenter_id: this.props.auth0.user ? this.props.auth0.user!.name! : "匿名用户",
+      commenter_name: this.props.auth0.user ? this.props.auth0.user!.nickname! : "匿名用户",
     };
 
     return axios
