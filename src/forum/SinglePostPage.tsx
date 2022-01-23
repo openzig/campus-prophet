@@ -14,6 +14,7 @@ import {
 import RichTextEditor from "../common/RichTextEditor";
 import { withAuth0, WithAuth0Props } from "@auth0/auth0-react";
 import SingleCommentItem from "../common/SingleCommentItem";
+import Utils from "../Utils";
 
 var HtmlToReactParser = require("html-to-react").Parser;
 
@@ -34,6 +35,7 @@ interface ISinglePostPageState {
   isLastPage: boolean;
   replyToName?: string;
   replyToId?: string;
+  replyToEmail?: string;
   isAuthenticated: boolean;
 }
 
@@ -141,6 +143,7 @@ class SinglePostPage extends Component<
       .post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/comment/add`, comment)
       .then((response) => {
         this.setState({ comments: [...this.state.comments, response.data] });
+        Utils.sendReplyNotification(comment.commenter_name, this.state.replyToName!, this.state.replyToEmail!, comment.post_id);
         return new Promise((resolve, _reject) => resolve(response));
       })
       .catch((err: any) => {
@@ -183,6 +186,7 @@ class SinglePostPage extends Component<
     this.setState({
       replyToName: `@${this.state.post?.poster_name!} `,
       replyToId: this.state.post?._id,
+      replyToEmail: this.state.post?.poster_id
     });
   }
 
@@ -240,6 +244,7 @@ class SinglePostPage extends Component<
                   this.setState({
                     replyToName: `@${comment.commenter_name} `,
                     replyToId: comment._id,
+                    replyToEmail: comment.commenter_id
                   });
                 }}
               />

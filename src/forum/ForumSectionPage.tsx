@@ -13,6 +13,7 @@ import RichTextEditor from "../common/RichTextEditor";
 import SinglePostItem from "../common/SinglePostItem";
 import Post from "../models/Post";
 import "../styles/ForumSectionPage.css";
+import Utils from "../Utils";
 
 interface IForumSectionPageProps extends WithAuth0Props {
   sectionName: string;
@@ -120,6 +121,7 @@ class ForumSectionPage extends Component<
         this.setState({
           posts: [...this.state.posts, { ...post, _id: response.data }],
         });
+        Utils.sendReplyNotification(post.poster_name, "openzig", "openzig@gmail.com", response.data);
         return new Promise((resolve, _reject) => resolve(response));
       })
       .catch((err: any) => {
