@@ -125,7 +125,7 @@ class RichTextEditor extends Component<
         {!this.props.auth0.isAuthenticated && (
           <LoginButton>请先登陆</LoginButton>
         )}
-        {!this.props.auth0.isAuthenticated && (
+        {/* {!this.props.auth0.isAuthenticated && (
           <Button
             variant="primary"
             disabled={this.state.isLoading}
@@ -133,7 +133,7 @@ class RichTextEditor extends Component<
           >
             {this.state.isLoading ? "发布中…" : "匿名发布"}
           </Button>
-        )}
+        )} */}
         <div className="errorMessage">
           <Alert show={this.state.submitSuccess} variant="success">
             发表成功
